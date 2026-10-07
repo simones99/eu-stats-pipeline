@@ -1,0 +1,35 @@
+name: eustats
+version: "0.1.0"
+config-version: 2
+profile: eustats
+
+model-paths: ["models"]
+test-paths: ["tests"]
+seed-paths: ["seeds"]
+macro-paths: ["macros"]
+target-path: "target"
+clean-targets: ["target", "dbt_packages"]
+
+vars:
+  # Raw tables loaded by `eustats load`; one per entry in config/datasets.yml.
+  indicators: ["gdp_pps_per_inhabitant", "population", "unemployment_rate"]
+  # Tolerance for the regional-to-national population coherence check.
+  population_coherence_tolerance: 0.005
+
+models:
+  eustats:
+    staging:
+      +materialized: view
+      +schema: staging
+    marts:
+      +materialized: table
+      +schema: marts
+
+seeds:
+  eustats:
+    +schema: reference
+
+data_tests:
+  eustats:
+    +store_failures: true
+    +schema: quality

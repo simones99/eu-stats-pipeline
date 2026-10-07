@@ -1,0 +1,25 @@
+# Eurostat datasets ingested by the pipeline.
+# `key` is the SDMX series key: one value per dimension, in DSD order, geo left empty (all).
+start_period: 2015
+
+datasets:
+  - id: gdp_pps_per_inhabitant
+    code: nama_10r_2gdp
+    key: A.PPS_EU27_2020_HAB.
+    label: GDP per inhabitant
+    unit: PPS (EU27 from 2020) per inhabitant
+    valid_range: [1000, 200000]
+
+  - id: population
+    code: demo_r_d2jan
+    key: A.NR.T.TOTAL.
+    label: Population on 1 January
+    unit: Persons
+    valid_range: [1000, 500000000]
+
+  - id: unemployment_rate
+    code: lfst_r_lfu3rt
+    key: A.TOTAL.T.Y15-74.PC.
+    label: Unemployment rate, 15-74 years
+    unit: Percentage of labour force
+    valid_range: [0, 100]

@@ -1,0 +1,14 @@
+.venv/
+__pycache__/
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+
+# Pipeline outputs (rebuilt by `eustats run`); docs/ snapshots are committed on purpose.
+data/
+site/
+dbt/target/
+dbt/logs/
+dbt/dbt_packages/
+logs/
+.user.yml

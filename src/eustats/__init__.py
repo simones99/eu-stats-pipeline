@@ -1,0 +1,1 @@
+"""Eurostat regional statistics pipeline."""

@@ -1,0 +1,71 @@
+version: 2
+
+models:
+  - name: stg_eurostat__observations
+    description: Typed observations of all configured indicators, one row per indicator, geo and year.
+    data_tests:
+      - unique_combination_of_columns:
+          arguments:
+            combination_of_columns: [indicator_id, geo, time_period]
+    columns:
+      - name: indicator_id
+        description: Indicator identifier from config/datasets.yml.
+        data_tests: [not_null]
+      - name: dataflow
+        description: Eurostat dataflow the row comes from (e.g. ESTAT:NAMA_10R_2GDP).
+      - name: geo
+        description: Eurostat GEO code (country, NUTS region or aggregate).
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_eurostat__geo')
+                field: geo
+      - name: time_period
+        description: Reference year.
+        data_tests: [not_null]
+      - name: obs_value
+        description: Observation value; null when Eurostat publishes no value.
+      - name: obs_flag
+        description: Eurostat observation status flag, possibly combined (e.g. "bep").
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('stg_eurostat__obs_flags')
+                field: obs_flag
+      - name: has_break
+        description: True when the flag contains "b" (break in time series).
+      - name: is_estimated
+        description: True when the flag contains "e" (estimated).
+      - name: is_provisional
+        description: True when the flag contains "p" (provisional).
+      - name: is_low_reliability
+        description: True when the flag contains "u" (low reliability).
+      - name: source_last_update
+        description: Last update of the dataset at Eurostat, from the SDMX-CSV "LAST UPDATE" column.
+
+  - name: stg_eurostat__geo
+    description: Eurostat GEO codelist with English labels.
+    columns:
+      - name: geo
+        data_tests: [unique, not_null]
+      - name: geo_label
+
+  - name: stg_eurostat__obs_flags
+    description: Eurostat OBS_FLAG codelist with English meanings.
+    columns:
+      - name: obs_flag
+        data_tests: [unique, not_null]
+      - name: flag_meaning
+
+  - name: stg_gisco__nuts2
+    description: NUTS 2024 level-2 regions available in the GISCO geometry file.
+    columns:
+      - name: nuts_id
+        data_tests: [unique, not_null]
+
+  - name: stg_config__indicators
+    description: Indicator metadata and plausibility ranges.
+    columns:
+      - name: indicator_id
+        data_tests: [unique, not_null]

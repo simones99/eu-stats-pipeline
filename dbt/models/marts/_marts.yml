@@ -1,0 +1,94 @@
+version: 2
+
+models:
+  - name: dim_geo
+    description: Geographic units found in the data, classified by level and EU membership.
+    columns:
+      - name: geo
+        description: Eurostat GEO code.
+        data_tests: [unique, not_null]
+      - name: geo_label
+        description: English label from the Eurostat GEO codelist.
+      - name: geo_level
+        description: eu_aggregate, country, nuts1, nuts2 or other_aggregate.
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: [eu_aggregate, country, nuts1, nuts2, other_aggregate]
+      - name: country_code
+        description: Two-letter country code for countries and NUTS regions.
+      - name: is_eu27
+        description: True for the 27 Member States and their regions.
+      - name: is_non_regional
+        description: True for extra-regio (code ending in Z/ZZ) and not regionalised (X/XX) units.
+      - name: in_gisco_nuts2024
+        description: True when the code has a NUTS 2024 level-2 geometry in GISCO.
+
+  - name: fct_indicator_values
+    description: >
+      Analysis-ready observations for the EU27 aggregate, the 27 Member States and their
+      NUTS 1 and NUTS 2 regions (non-regional units excluded; regions from older NUTS
+      versions kept and marked by in_gisco_nuts2024). One row per indicator, geo and year.
+    data_tests:
+      - unique_combination_of_columns:
+          arguments:
+            combination_of_columns: [indicator_id, geo, time_period]
+    columns:
+      - name: indicator_id
+        description: Indicator identifier.
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_config__indicators')
+                field: indicator_id
+      - name: geo
+        description: Eurostat GEO code.
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_geo')
+                field: geo
+      - name: geo_level
+        description: Level of the geographic unit.
+      - name: country_code
+        description: Two-letter country code (null for the EU aggregate).
+      - name: in_gisco_nuts2024
+        description: True when the region exists in NUTS 2024; false for codes of older NUTS versions.
+      - name: time_period
+        description: Reference year.
+      - name: obs_value
+        description: Observation value in the unit given in config/datasets.yml.
+        data_tests:
+          - value_in_configured_range
+      - name: obs_flag
+        description: Eurostat observation status flag.
+      - name: flag_meaning
+        description: English meaning of the flag.
+      - name: has_break
+        description: Break in time series.
+      - name: is_estimated
+        description: Estimated value.
+      - name: is_provisional
+        description: Provisional value.
+      - name: is_low_reliability
+        description: Low reliability value.
+      - name: source_last_update
+        description: Last update of the source dataset at Eurostat.
+
+  - name: mart_nuts2_latest
+    description: Latest non-missing value of each indicator for each NUTS 2024 level-2 region.
+    data_tests:
+      - unique_combination_of_columns:
+          arguments:
+            combination_of_columns: [indicator_id, geo]
+    columns:
+      - name: indicator_id
+      - name: geo
+      - name: geo_label
+      - name: country_code
+      - name: time_period
+        description: Year of the latest available value.
+      - name: obs_value
+      - name: obs_flag

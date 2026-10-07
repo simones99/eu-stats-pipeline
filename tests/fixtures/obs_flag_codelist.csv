@@ -1,0 +1,43 @@
+code,label
+b,break in time series
+bd,"break in time series, definition differs (see metadata)"
+bde,"break in time series, definition differs (see metadata), estimated"
+bdep,"break in time series, definition differs (see metadata), estimated, provisional"
+bdf,"break in time series, definition differs (see metadata), forecast"
+bdn,"break in time series, definition differs (see metadata), not significant"
+bdp,"break in time series, definition differs (see metadata), provisional"
+bdu,"break in time series, definition differs (see metadata), low reliability"
+be,"break in time series, estimated"
+bep,"break in time series, estimated, provisional"
+bf,"break in time series, forecast"
+bn,"break in time series, not significant"
+bp,"break in time series, provisional"
+bpu,"break in time series, provisional, low reliability"
+bu,"break in time series, low reliability"
+d,definition differs (see metadata)
+de,"definition differs (see metadata), estimated"
+dep,"definition differs (see metadata), estimated, provisional"
+df,"definition differs (see metadata), forecast"
+dn,"definition differs (see metadata), not significant"
+dp,"definition differs (see metadata), provisional"
+dpu,"definition differs (see metadata), provisional, low reliability"
+du,"definition differs (see metadata), low reliability"
+e,estimated
+ep,"estimated, provisional"
+f,forecast
+n,not significant
+p,provisional
+pu,"provisional, low reliability"
+u,low reliability
+bdip,"break in time series, definition differs (see metadata), value imputed by Eurostat or other receiving agencies, provisional"
+bdi,"break in time series, definition differs (see metadata), value imputed by Eurostat or other receiving agencies"
+bdm,"break in time series, definition differs (see metadata), missing value; data cannot exist"
+bip,"break in time series, value imputed by Eurostat or other receiving agencies, provisional"
+bi,"break in time series, value imputed by Eurostat or other receiving agencies"
+bm,"break in time series, missing value; data cannot exist"
+dip,"definition differs (see metadata), value imputed by Eurostat or other receiving agencies, provisional"
+di,"definition differs (see metadata), value imputed by Eurostat or other receiving agencies"
+dm,"definition differs (see metadata), missing value; data cannot exist"
+ip,"value imputed by Eurostat or other receiving agencies, provisional"
+i,value imputed by Eurostat or other receiving agencies
+m,missing value; data cannot exist

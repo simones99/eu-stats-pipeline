@@ -1,0 +1,23 @@
+version: 2
+
+sources:
+  - name: raw
+    description: Files downloaded by `eustats ingest` and loaded as text by `eustats load`.
+    schema: raw
+    tables:
+      - name: gdp_pps_per_inhabitant
+        description: "Eurostat nama_10r_2gdp, series A.PPS_EU27_2020_HAB (SDMX-CSV)."
+      - name: population
+        description: "Eurostat demo_r_d2jan, series A.NR.T.TOTAL (SDMX-CSV)."
+      - name: unemployment_rate
+        description: "Eurostat lfst_r_lfu3rt, series A.TOTAL.T.Y15-74.PC (SDMX-CSV)."
+      - name: geo_codelist
+        description: Eurostat GEO codelist (codes and English labels), from SDMX-ML.
+      - name: obs_flag_codelist
+        description: Eurostat OBS_FLAG codelist (observation status flags), from SDMX-ML.
+      - name: gisco_nuts2
+        description: NUTS 2024 level-2 regions from the GISCO geometry file.
+      - name: dataset_config
+        description: Indicator metadata and plausibility ranges from config/datasets.yml.
+      - name: manifest
+        description: Lineage record of every raw file (source URL, retrieval time, SHA-256, rows).
