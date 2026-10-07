@@ -1,0 +1,58 @@
+name: publish
+
+# Runs the pipeline on live Eurostat data once a month (or on demand), keeps the
+# outputs as a build artifact for review, and publishes the dashboard to GitHub Pages.
+on:
+  schedule:
+    - cron: "0 6 3 * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+      - name: Install
+        run: pip install -r requirements.txt -e .
+      - name: Run pipeline
+        run: eustats run
+      - name: Keep outputs for review
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: eustats-outputs
+          path: |
+            docs/quality-report.md
+            docs/data-dictionary.md
+            site/index.html
+            data/raw/manifest.json
+      - name: Package dashboard for Pages
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+
+  deploy:
+    needs: build
+    # GitHub Pages needs a public repository on the free plan; skip while private.
+    if: ${{ !github.event.repository.private }}
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

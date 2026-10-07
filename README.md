@@ -2,6 +2,8 @@
 
 A small, reproducible statistical production pipeline for EU regional data. It downloads Eurostat datasets through the SDMX API and records the lineage of every file. It then validates the data with explicit, documented rules and publishes three outputs: a data quality report, a data dictionary and a dashboard.
 
+**Live dashboard:** [simones99.github.io/eu-stats-pipeline](https://simones99.github.io/eu-stats-pipeline/) (rebuilt monthly from live Eurostat data)
+
 ![Dashboard: GDP per inhabitant by NUTS 2 region](docs/img/dashboard.png)
 
 ## What it does
@@ -22,7 +24,7 @@ GISCO NUTS 2024 ───┘                                                  �
   - NUTS version comparability.
 - **Quality report** structured by the ESS quality dimensions. It reports flag shares (estimated, provisional, break in series), completeness, timeliness and every check result: [docs/quality-report.md](docs/quality-report.md).
 - **Data dictionary** generated from the dbt project: [docs/data-dictionary.md](docs/data-dictionary.md).
-- **Dashboard.** A static HTML page with NUTS 2 maps and national time series (`site/index.html`).
+- **Dashboard.** A static HTML page with NUTS 2 maps and national time series (`site/index.html`), published on [GitHub Pages](https://simones99.github.io/eu-stats-pipeline/).
 
 The methods, the validation rules and what they found are described in the [methodology note](docs/methodology.md). Among the findings: Eurostat's regional tables mix NUTS 2021 and NUTS 2024 codes, which double counts regional totals unless handled.
 
@@ -47,7 +49,7 @@ pytest -q          # unit tests and an offline end-to-end run, including all dbt
 ruff check src tests
 ```
 
-CI runs both on every push. A scheduled workflow runs the pipeline on live data once a month and uploads the outputs for review.
+CI runs both on every push. The `publish` workflow runs the pipeline on live data once a month (or on demand). It keeps the quality report, data dictionary and dashboard as a build artifact for review, and deploys the dashboard to GitHub Pages.
 
 ## Project layout
 
