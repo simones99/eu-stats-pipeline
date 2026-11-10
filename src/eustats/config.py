@@ -16,6 +16,9 @@ class Dataset:
     label: str
     unit: str
     valid_range: tuple[float, float]
+    dashboard: bool = True
+    map_midpoint: float | None = None
+    map_log_scale: bool = False
 
 
 @dataclass(frozen=True)
@@ -34,6 +37,11 @@ def load_config(path: Path) -> Config:
             label=item["label"],
             unit=item["unit"],
             valid_range=(float(item["valid_range"][0]), float(item["valid_range"][1])),
+            dashboard=bool(item.get("dashboard", True)),
+            map_midpoint=(
+                float(item["map_midpoint"]) if item.get("map_midpoint") is not None else None
+            ),
+            map_log_scale=bool(item.get("map_log_scale", False)),
         )
         for item in raw["datasets"]
     )

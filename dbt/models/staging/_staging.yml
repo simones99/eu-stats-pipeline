@@ -65,7 +65,15 @@ models:
         data_tests: [unique, not_null]
 
   - name: stg_config__indicators
-    description: Indicator metadata and plausibility ranges.
+    description: Indicator metadata, plausibility ranges and dashboard settings.
     columns:
       - name: indicator_id
         data_tests: [unique, not_null]
+      - name: on_dashboard
+        description: False for indicators kept in the pipeline but not shown on the dashboard.
+        data_tests: [not_null]
+      - name: map_midpoint
+        description: Value the diverging map colour scale is centred on; null for a sequential scale.
+      - name: map_log_scale
+        description: True when the map is coloured by the logarithm of the value.
+        data_tests: [not_null]

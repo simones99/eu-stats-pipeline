@@ -1,5 +1,5 @@
 name: eustats
-version: "0.1.0"
+version: "0.2.0"
 config-version: 2
 profile: eustats
 
@@ -12,7 +12,12 @@ clean-targets: ["target", "dbt_packages"]
 
 vars:
   # Raw tables loaded by `eustats load`; one per entry in config/datasets.yml.
-  indicators: ["gdp_pps_per_inhabitant", "population", "unemployment_rate"]
+  indicators:
+    - gdp_pps_per_inhabitant
+    - gdp_pps_pct_eu27
+    - population
+    - population_density
+    - unemployment_rate
   # Tolerance for the regional-to-national population coherence check.
   population_coherence_tolerance: 0.005
 

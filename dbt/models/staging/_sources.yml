@@ -7,8 +7,12 @@ sources:
     tables:
       - name: gdp_pps_per_inhabitant
         description: "Eurostat nama_10r_2gdp, series A.PPS_EU27_2020_HAB (SDMX-CSV)."
+      - name: gdp_pps_pct_eu27
+        description: "Eurostat nama_10r_2gdp, series A.PPS_HAB_EU27_2020 (SDMX-CSV)."
       - name: population
         description: "Eurostat demo_r_d2jan, series A.NR.T.TOTAL (SDMX-CSV)."
+      - name: population_density
+        description: "Eurostat demo_r_d3dens, series A.PER_KM2 (SDMX-CSV); also carries NUTS 3 regions."
       - name: unemployment_rate
         description: "Eurostat lfst_r_lfu3rt, series A.TOTAL.T.Y15-74.PC (SDMX-CSV)."
       - name: geo_codelist
@@ -18,6 +22,6 @@ sources:
       - name: gisco_nuts2
         description: NUTS 2024 level-2 regions from the GISCO geometry file.
       - name: dataset_config
-        description: Indicator metadata and plausibility ranges from config/datasets.yml.
+        description: Indicator metadata, plausibility ranges and dashboard settings from config/datasets.yml.
       - name: manifest
         description: Lineage record of every raw file (source URL, retrieval time, SHA-256, rows).

@@ -1,4 +1,4 @@
--- Observations in scope: the EU27 aggregate, the 27 Member States and their regions.
+-- Observations in scope: the EU27 aggregate, the 27 Member States and their NUTS 1 and 2 regions.
 select
     o.indicator_id,
     o.geo,
@@ -19,3 +19,5 @@ inner join {{ ref('dim_geo') }} as d on d.geo = o.geo
 left join {{ ref('stg_eurostat__obs_flags') }} as f on f.obs_flag = o.obs_flag
 where (d.is_eu27 or d.geo_level = 'eu_aggregate')
   and not d.is_non_regional
+  -- Some datasets (population density) also deliver NUTS 3 regions: out of scope.
+  and d.geo_level <> 'nuts3'

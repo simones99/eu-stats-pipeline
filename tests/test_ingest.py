@@ -40,7 +40,9 @@ def test_offline_ingest_writes_manifest_with_checksums(tmp_path):
     files = {entry["file"]: entry for entry in manifest["files"]}
     assert set(files) == {
         "gdp_pps_per_inhabitant.csv",
+        "gdp_pps_pct_eu27.csv",
         "population.csv",
+        "population_density.csv",
         "unemployment_rate.csv",
         "geo_codelist.csv",
         "obs_flag_codelist.csv",
