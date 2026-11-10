@@ -53,12 +53,23 @@ def load(raw_dir: Path, config_path: Path, warehouse: Path) -> None:
         con.execute(
             "create or replace table raw.dataset_config "
             "(indicator_id varchar, dataset_code varchar, label varchar, unit varchar, "
-            "valid_min double, valid_max double)"
+            "valid_min double, valid_max double, on_dashboard boolean, map_midpoint double, "
+            "map_log_scale boolean)"
         )
         con.executemany(
-            "insert into raw.dataset_config values (?, ?, ?, ?, ?, ?)",
+            "insert into raw.dataset_config values (?, ?, ?, ?, ?, ?, ?, ?, ?)",
             [
-                (d.id, d.code, d.label, d.unit, d.valid_range[0], d.valid_range[1])
+                (
+                    d.id,
+                    d.code,
+                    d.label,
+                    d.unit,
+                    d.valid_range[0],
+                    d.valid_range[1],
+                    d.dashboard,
+                    d.map_midpoint,
+                    d.map_log_scale,
+                )
                 for d in config.datasets
             ],
         )

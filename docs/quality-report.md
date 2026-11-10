@@ -1,8 +1,8 @@
 # Data quality report
 
-Generated 2026-10-07 11:29 UTC by `eustats report`. Structure follows the quality dimensions of the European Statistical System (ESS).
+Generated 2026-11-10 17:16 UTC by `eustats report`. Structure follows the quality dimensions of the European Statistical System (ESS).
 
-**Validation summary:** 27 checks, 0 failed, 2 warnings for manual review.
+**Validation summary:** 29 checks, 0 failed, 2 warnings for manual review.
 
 ## Sources and lineage
 
@@ -10,12 +10,14 @@ Every raw file is recorded in `data/raw/manifest.json` with its source URL, retr
 
 | file | dataset_code | rows | sha256_prefix | retrieved_at | offline_fixture |
 |---|---|---|---|---|---|
-| gdp_pps_per_inhabitant.csv | [nama_10r_2gdp](https://ec.europa.eu/eurostat/databrowser/view/nama_10r_2gdp/default/table?lang=en) | 4256 | da5b441cd694 | 2026-10-07T11:29:42+00:00 | False |
-| geo_codelist.csv | ESTAT:GEO | 4292 | cf6fa01431eb | 2026-10-07T11:29:42+00:00 | False |
-| nuts2_2024.geojson | GISCO:NUTS_2024_LEVL_2 |  | 33124a7520d3 | 2026-10-07T11:29:42+00:00 | False |
-| obs_flag_codelist.csv | ESTAT:OBS_FLAG | 42 | beea4f08234d | 2026-10-07T11:29:42+00:00 | False |
-| population.csv | [demo_r_d2jan](https://ec.europa.eu/eurostat/databrowser/view/demo_r_d2jan/default/table?lang=en) | 5257 | 1374c2c41912 | 2026-10-07T11:29:42+00:00 | False |
-| unemployment_rate.csv | [lfst_r_lfu3rt](https://ec.europa.eu/eurostat/databrowser/view/lfst_r_lfu3rt/default/table?lang=en) | 5055 | 1cfcd76f0fe6 | 2026-10-07T11:29:42+00:00 | False |
+| gdp_pps_pct_eu27.csv | [nama_10r_2gdp](https://ec.europa.eu/eurostat/databrowser/view/nama_10r_2gdp/default/table?lang=en) | 4256 | 436ffe1c2365 | 2026-11-10T17:16:04+00:00 | False |
+| gdp_pps_per_inhabitant.csv | [nama_10r_2gdp](https://ec.europa.eu/eurostat/databrowser/view/nama_10r_2gdp/default/table?lang=en) | 4256 | da5b441cd694 | 2026-11-10T17:16:04+00:00 | False |
+| geo_codelist.csv | ESTAT:GEO | 4292 | cf6fa01431eb | 2026-11-10T17:16:04+00:00 | False |
+| nuts2_2024.geojson | GISCO:NUTS_2024_LEVL_2 |  | 33124a7520d3 | 2026-11-10T17:16:04+00:00 | False |
+| obs_flag_codelist.csv | ESTAT:OBS_FLAG | 42 | beea4f08234d | 2026-11-10T17:16:04+00:00 | False |
+| population.csv | [demo_r_d2jan](https://ec.europa.eu/eurostat/databrowser/view/demo_r_d2jan/default/table?lang=en) | 5257 | 1374c2c41912 | 2026-11-10T17:16:04+00:00 | False |
+| population_density.csv | [demo_r_d3dens](https://ec.europa.eu/eurostat/databrowser/view/demo_r_d3dens/default/table?lang=en) | 18346 | b460d8406cc9 | 2026-11-10T17:16:04+00:00 | False |
+| unemployment_rate.csv | [lfst_r_lfu3rt](https://ec.europa.eu/eurostat/databrowser/view/lfst_r_lfu3rt/default/table?lang=en) | 5055 | 8c2ebfedb85c | 2026-11-10T17:16:04+00:00 | False |
 
 ## 1. Relevance
 
@@ -23,8 +25,10 @@ Indicators, coverage of the EU27 Member States and NUTS 2024 level-2 regions.
 
 | indicator_id | dataset_code | label | unit | first_year | last_year | countries | nuts2_regions |
 |---|---|---|---|---|---|---|---|
+| gdp_pps_pct_eu27 | nama_10r_2gdp | GDP per inhabitant, EU27 = 100 | PPS per inhabitant, % of the EU27 average | 2015 | 2024 | 27 | 244 |
 | gdp_pps_per_inhabitant | nama_10r_2gdp | GDP per inhabitant | PPS (EU27 from 2020) per inhabitant | 2015 | 2024 | 27 | 244 |
 | population | demo_r_d2jan | Population on 1 January | Persons | 2015 | 2025 | 27 | 244 |
+| population_density | demo_r_d3dens | Population density | Persons per km² | 2015 | 2024 | 27 | 242 |
 | unemployment_rate | lfst_r_lfu3rt | Unemployment rate, 15-74 years | Percentage of labour force | 2015 | 2025 | 27 | 244 |
 
 ## 2. Accuracy and reliability
@@ -33,16 +37,20 @@ Share of observations by Eurostat status flag (combined flags count for each com
 
 | indicator_id | observations | pct_missing | pct_estimated | pct_provisional | pct_low_reliability | pct_series_break |
 |---|---|---|---|---|---|---|
+| gdp_pps_pct_eu27 | 3640 | 0.0 | 1.0 | 18.1 | 0.0 | 1.5 |
 | gdp_pps_per_inhabitant | 3640 | 0.0 | 1.0 | 18.1 | 0.0 | 1.5 |
 | population | 4051 | 0.0 | 3.4 | 4.5 | 0.0 | 2.4 |
+| population_density | 3602 | 0.0 | 3.6 | 6.3 | 0.0 | 12.6 |
 | unemployment_rate | 3991 | 1.2 | 0.0 | 0.0 | 5.1 | 15.6 |
 
 Completeness of the latest year with regional data, against all NUTS 2024 level-2 regions of the EU27:
 
 | indicator_id | latest_year | regions_with_value | eu_nuts2_regions | pct_complete |
 |---|---|---|---|---|
+| gdp_pps_pct_eu27 | 2024 | 244 | 244 | 100.0 |
 | gdp_pps_per_inhabitant | 2024 | 244 | 244 | 100.0 |
 | population | 2025 | 244 | 244 | 100.0 |
+| population_density | 2024 | 242 | 244 | 99.2 |
 | unemployment_rate | 2025 | 241 | 244 | 98.8 |
 
 Validation checks (dbt tests):
@@ -51,12 +59,14 @@ Validation checks (dbt tests):
 |---|---|---|
 | assert_no_extreme_year_on_year_changes | warn | 21 |
 | assert_nuts2_codes_in_gisco_2024 | warn | 5 |
-| accepted_values_dim_geo_geo_level__eu_aggregate__country__nuts1__nuts2__other_aggregate | pass | 0 |
+| accepted_values_dim_geo_geo_level__eu_aggregate__country__nuts1__nuts2__nuts3__other_aggregate | pass | 0 |
 | assert_regional_population_matches_national | pass | 0 |
 | not_null_dim_geo_geo | pass | 0 |
 | not_null_fct_indicator_values_geo | pass | 0 |
 | not_null_fct_indicator_values_indicator_id | pass | 0 |
 | not_null_stg_config__indicators_indicator_id | pass | 0 |
+| not_null_stg_config__indicators_map_log_scale | pass | 0 |
+| not_null_stg_config__indicators_on_dashboard | pass | 0 |
 | not_null_stg_eurostat__geo_geo | pass | 0 |
 | not_null_stg_eurostat__obs_flags_obs_flag | pass | 0 |
 | not_null_stg_eurostat__observations_geo | pass | 0 |
@@ -81,9 +91,11 @@ Validation checks (dbt tests):
 
 | indicator_id | latest_reference_year | eurostat_last_update | years_since_reference |
 |---|---|---|---|
+| gdp_pps_pct_eu27 | 2024 | 2026-02-10 | 2 |
 | gdp_pps_per_inhabitant | 2024 | 2026-02-10 | 2 |
 | population | 2025 | 2026-08-28 | 1 |
-| unemployment_rate | 2025 | 2026-09-10 | 1 |
+| population_density | 2024 | 2026-02-25 | 2 |
+| unemployment_rate | 2025 | 2026-10-30 | 1 |
 
 Regional accounts and labour-market statistics are published with a lag of one to two years after the reference year.
 

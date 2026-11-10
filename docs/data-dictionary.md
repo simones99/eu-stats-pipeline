@@ -10,7 +10,7 @@ Geographic units found in the data, classified by level and EU membership.
 |---|---|---|
 | `geo` | VARCHAR | Eurostat GEO code. |
 | `geo_label` | VARCHAR | English label from the Eurostat GEO codelist. |
-| `geo_level` | VARCHAR | eu_aggregate, country, nuts1, nuts2 or other_aggregate. |
+| `geo_level` | VARCHAR | eu_aggregate, country, nuts1, nuts2, nuts3 or other_aggregate. |
 | `country_code` | VARCHAR | Two-letter country code for countries and NUTS regions. |
 | `is_eu27` | BOOLEAN | True for the 27 Member States and their regions. |
 | `is_non_regional` | BOOLEAN | True for extra-regio (code ending in Z/ZZ) and not regionalised (X/XX) units. |
@@ -18,7 +18,7 @@ Geographic units found in the data, classified by level and EU membership.
 
 ## `marts.fct_indicator_values`
 
-Analysis-ready observations for the EU27 aggregate, the 27 Member States and their NUTS 1 and NUTS 2 regions (non-regional units excluded; regions from older NUTS versions kept and marked by in_gisco_nuts2024). One row per indicator, geo and year.
+Analysis-ready observations for the EU27 aggregate, the 27 Member States and their NUTS 1 and NUTS 2 regions (non-regional units and NUTS 3 regions excluded; regions from older NUTS versions kept and marked by in_gisco_nuts2024). One row per indicator, geo and year.
 
 | Column | Type | Description |
 |---|---|---|
@@ -53,11 +53,14 @@ Latest non-missing value of each indicator for each NUTS 2024 level-2 region.
 
 ## `staging.stg_config__indicators`
 
-Indicator metadata and plausibility ranges.
+Indicator metadata, plausibility ranges and dashboard settings.
 
 | Column | Type | Description |
 |---|---|---|
 | `indicator_id` | VARCHAR |  |
+| `on_dashboard` | BOOLEAN | False for indicators kept in the pipeline but not shown on the dashboard. |
+| `map_midpoint` | DOUBLE | Value the diverging map colour scale is centred on; null for a sequential scale. |
+| `map_log_scale` | BOOLEAN | True when the map is coloured by the logarithm of the value. |
 
 ## `staging.stg_eurostat__geo`
 

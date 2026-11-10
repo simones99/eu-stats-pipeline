@@ -11,6 +11,7 @@ classified as (
             when length(geo) = 2 then 'country'
             when length(geo) = 3 then 'nuts1'
             when length(geo) = 4 then 'nuts2'
+            when length(geo) = 5 then 'nuts3'
             else 'other_aggregate'
         end as geo_level
     from codes
@@ -20,7 +21,7 @@ select
     c.geo,
     g.geo_label,
     c.geo_level,
-    case when c.geo_level in ('country', 'nuts1', 'nuts2') then left(c.geo, 2) end as country_code,
+    case when c.geo_level in ('country', 'nuts1', 'nuts2', 'nuts3') then left(c.geo, 2) end as country_code,
     eu.country_code is not null as is_eu27,
     -- Extra-regio (e.g. ITZZ) and "not regionalised" (e.g. FRXX) units hold data
     -- that cannot be assigned to a territorial region.

@@ -4,7 +4,7 @@ A small, reproducible statistical production pipeline for EU regional data. It d
 
 **Live dashboard:** [simones99.github.io/eu-stats-pipeline](https://simones99.github.io/eu-stats-pipeline/) (rebuilt monthly from live Eurostat data)
 
-![Dashboard: GDP per inhabitant by NUTS 2 region](docs/img/dashboard.png)
+![Dashboard: GDP per inhabitant by NUTS 2 region, EU27 = 100](docs/img/dashboard.png)
 
 ## What it does
 
@@ -24,7 +24,7 @@ GISCO NUTS 2024 ───┘                                                  �
   - NUTS version comparability.
 - **Quality report** structured by the ESS quality dimensions. It reports flag shares (estimated, provisional, break in series), completeness, timeliness and every check result: [docs/quality-report.md](docs/quality-report.md).
 - **Data dictionary** generated from the dbt project: [docs/data-dictionary.md](docs/data-dictionary.md).
-- **Dashboard.** A static HTML page with NUTS 2 maps and national time series (`site/index.html`), published on [GitHub Pages](https://simones99.github.io/eu-stats-pipeline/).
+- **Dashboard.** A static HTML page with NUTS 2 maps and national time series (`site/index.html`) for GDP per inhabitant relative to the EU27 average, population density and unemployment, published on [GitHub Pages](https://simones99.github.io/eu-stats-pipeline/).
 
 The methods, the validation rules and what they found are described in the [methodology note](docs/methodology.md). Among the findings: Eurostat's regional tables mix NUTS 2021 and NUTS 2024 codes, which double counts regional totals unless handled.
 

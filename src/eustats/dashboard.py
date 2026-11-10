@@ -4,22 +4,58 @@ from __future__ import annotations
 
 import html
 import json
+import math
 from pathlib import Path
 
 import duckdb
+import pandas as pd
 import plotly.express as px
+
+REPOSITORY_URL = "https://github.com/simones99/eu-stats-pipeline"
+DATABROWSER_URL = "https://ec.europa.eu/eurostat/databrowser/view/{code}/default/table"
+SEQUENTIAL_SCALE = "Viridis"
+DIVERGING_SCALE = "BrBG"
 
 # Member States shown in the time-series charts next to the EU27 aggregate.
 FOCUS_COUNTRIES = ("IT", "DE", "FR", "ES", "PL")
+
+
+def map_colours(values: pd.Series, midpoint: float | None) -> tuple[str, tuple[float, float]]:
+    """Colour scale and range for a map.
+
+    The range is clipped to the 5th-95th percentiles so a few extreme regions
+    (e.g. Luxembourg, Dublin) do not flatten the rest of the map. With a midpoint,
+    the scale is diverging and the range symmetric around it, so the midpoint
+    always gets the neutral colour.
+    """
+    low, high = (float(q) for q in values.quantile([0.05, 0.95]))
+    if midpoint is None:
+        return SEQUENTIAL_SCALE, (low, high)
+    half_width = max(midpoint - low, high - midpoint)
+    return DIVERGING_SCALE, (midpoint - half_width, midpoint + half_width)
+
+
+def log_ticks(low: float, high: float) -> list[float]:
+    """Round values (1, 3, 10, 30, ...) between low and high, for a log colour bar."""
+    ticks = []
+    for exponent in range(math.floor(math.log10(low)), math.ceil(math.log10(high)) + 1):
+        for mantissa in (1, 3):
+            value = mantissa * 10.0**exponent
+            if low <= value <= high:
+                ticks.append(int(value) if value >= 1 else value)
+    return ticks
 
 
 def build_dashboard(warehouse: Path, geojson_path: Path) -> str:
     geojson = json.loads(geojson_path.read_text(encoding="utf-8"))
     with duckdb.connect(str(warehouse), read_only=True) as con:
         indicators = con.execute(
-            "select indicator_id, label, unit, dataset_code "
-            "from staging.stg_config__indicators order by indicator_id"
+            "select indicator_id, label, unit, dataset_code, map_midpoint, map_log_scale "
+            "from staging.stg_config__indicators where on_dashboard order by indicator_id"
         ).fetchall()
+        retrieved_on = con.execute(
+            "select max(cast(retrieved_at as timestamptz))::date from raw.manifest"
+        ).fetchone()[0]
         latest = con.execute("select * from marts.mart_nuts2_latest").df()
         series = con.execute(
             "select f.indicator_id, f.geo, coalesce(g.geo_label, f.geo) as geo_label, "
@@ -31,25 +67,35 @@ def build_dashboard(warehouse: Path, geojson_path: Path) -> str:
         ).df()
 
     sections = []
-    for index, (indicator_id, label, unit, dataset_code) in enumerate(indicators):
+    for index, indicator in enumerate(indicators):
+        indicator_id, label, unit, dataset_code, map_midpoint, map_log_scale = indicator
         regional = latest[latest["indicator_id"] == indicator_id]
         year = int(regional["time_period"].max())
-        current = regional[regional["time_period"] == year]
+        current = regional[regional["time_period"] == year].copy()
         lagging = len(regional) - len(current)
+        # On a log scale the map is coloured by log10(value); the colour bar shows real values.
+        current["colour_value"] = (
+            current["obs_value"].map(math.log10) if map_log_scale else current["obs_value"]
+        )
+        colour_scale, colour_range = map_colours(current["colour_value"], map_midpoint)
         figure_map = px.choropleth(
             current,
             geojson=geojson,
             featureidkey="properties.NUTS_ID",
             locations="geo",
-            color="obs_value",
+            color="colour_value",
             hover_name="geo_label",
-            hover_data={"geo": True, "obs_value": ":,.1f", "obs_flag": True},
-            color_continuous_scale="Viridis",
-            # Clip the colour scale to the 5th-95th percentiles so a few extreme
-            # regions (e.g. Luxembourg, Dublin) do not flatten the rest of the map.
-            range_color=tuple(current["obs_value"].quantile([0.05, 0.95])),
-            labels={"obs_value": ""},
+            hover_data={"geo": True, "obs_value": ":,.1f", "obs_flag": True, "colour_value": False},
+            color_continuous_scale=colour_scale,
+            range_color=colour_range,
+            labels={"obs_value": unit, "colour_value": ""},
         )
+        if map_log_scale:
+            ticks = log_ticks(10 ** colour_range[0], 10 ** colour_range[1])
+            figure_map.update_coloraxes(
+                colorbar_tickvals=[math.log10(tick) for tick in ticks],
+                colorbar_ticktext=[f"{tick:,}" for tick in ticks],
+            )
         # Frame continental Europe; outermost regions stay in the data but off-screen.
         figure_map.update_geos(
             visible=False,
@@ -71,11 +117,20 @@ def build_dashboard(warehouse: Path, geojson_path: Path) -> str:
         figure_trend.update_layout(margin={"l": 0, "r": 0, "t": 10, "b": 0}, height=360)
 
         note = f" {lagging} regions have no {year} value yet and are not shown." if lagging else ""
+        if map_midpoint is not None:
+            scale_note = (
+                f"Colour scale centred on {map_midpoint:g} and clipped to the 5th-95th percentiles"
+            )
+        elif map_log_scale:
+            scale_note = "Logarithmic colour scale clipped to the 5th-95th percentiles"
+        else:
+            scale_note = "Colour scale clipped to the 5th-95th percentiles"
+        source_url = DATABROWSER_URL.format(code=dataset_code)
         sections.append(
             f"<section><h2>{html.escape(label)}</h2>"
             f"<p class='meta'>{html.escape(unit)} · NUTS 2 regions, {year} · "
-            f"source: Eurostat <code>{dataset_code}</code>. Colour scale clipped to the "
-            f"5th-95th percentiles; outermost regions are outside the frame."
+            f"source: Eurostat <a href='{source_url}'><code>{dataset_code}</code></a>. "
+            f"{scale_note}; outermost regions are outside the frame."
             f"{html.escape(note)}</p>"
             # The first chart loads plotly.js (version matched to the Python package).
             + figure_map.to_html(full_html=False, include_plotlyjs="cdn" if index == 0 else False)
@@ -84,7 +139,9 @@ def build_dashboard(warehouse: Path, geojson_path: Path) -> str:
             + "</section>"
         )
 
-    return PAGE_TEMPLATE.format(sections="\n".join(sections))
+    return PAGE_TEMPLATE.format(
+        sections="\n".join(sections), repository=REPOSITORY_URL, retrieved_on=retrieved_on
+    )
 
 
 PAGE_TEMPLATE = """<!doctype html>
@@ -99,13 +156,28 @@ PAGE_TEMPLATE = """<!doctype html>
   h1 {{ margin-bottom: 4px; }}
   section {{ border-top: 1px solid #d9e2ec; padding-top: 16px; margin-top: 24px; }}
   .meta {{ color: #52606d; font-size: 0.9rem; }}
+  footer {{ border-top: 1px solid #d9e2ec; margin-top: 32px; padding-top: 12px;
+           color: #52606d; font-size: 0.85rem; }}
 </style>
 </head>
 <body>
 <h1>EU regional statistics</h1>
-<p class="meta">Built by eu-stats-pipeline from Eurostat data. See the data quality report
-and the methodology note in the repository for validation results and caveats.</p>
+<p class="meta">Built by eu-stats-pipeline from Eurostat data. See the
+<a href="{repository}/blob/main/docs/quality-report.md">data quality report</a> and the
+<a href="{repository}/blob/main/docs/methodology.md">methodology note</a> for validation
+results and caveats.</p>
 {sections}
+<footer>
+<p>Data retrieved on {retrieved_on} from the Eurostat SDMX API. Data: © European Union
+(Eurostat), reused under the
+<a href="https://ec.europa.eu/eurostat/about-us/policies/copyright">Eurostat copyright notice</a>.
+NUTS 2024 boundaries: © EuroGeographics for the administrative boundaries, distributed by
+<a href="https://ec.europa.eu/eurostat/web/gisco">GISCO</a>.</p>
+<p>Code, <a href="{repository}/blob/main/docs/quality-report.md">quality report</a>,
+<a href="{repository}/blob/main/docs/data-dictionary.md">data dictionary</a> and
+<a href="{repository}/blob/main/docs/methodology.md">methodology</a>:
+<a href="{repository}">{repository}</a>.</p>
+</footer>
 </body>
 </html>
 """

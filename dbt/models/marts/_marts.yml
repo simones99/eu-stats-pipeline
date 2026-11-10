@@ -10,11 +10,11 @@ models:
       - name: geo_label
         description: English label from the Eurostat GEO codelist.
       - name: geo_level
-        description: eu_aggregate, country, nuts1, nuts2 or other_aggregate.
+        description: eu_aggregate, country, nuts1, nuts2, nuts3 or other_aggregate.
         data_tests:
           - accepted_values:
               arguments:
-                values: [eu_aggregate, country, nuts1, nuts2, other_aggregate]
+                values: [eu_aggregate, country, nuts1, nuts2, nuts3, other_aggregate]
       - name: country_code
         description: Two-letter country code for countries and NUTS regions.
       - name: is_eu27
@@ -27,7 +27,7 @@ models:
   - name: fct_indicator_values
     description: >
       Analysis-ready observations for the EU27 aggregate, the 27 Member States and their
-      NUTS 1 and NUTS 2 regions (non-regional units excluded; regions from older NUTS
+      NUTS 1 and NUTS 2 regions (non-regional units and NUTS 3 regions excluded; regions from older NUTS
       versions kept and marked by in_gisco_nuts2024). One row per indicator, geo and year.
     data_tests:
       - unique_combination_of_columns:

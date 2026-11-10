@@ -1,5 +1,8 @@
 # Eurostat datasets ingested by the pipeline.
 # `key` is the SDMX series key: one value per dimension, in DSD order, geo left empty (all).
+# Optional: `dashboard: false` keeps an indicator in the pipeline and the quality report
+# but off the dashboard; `map_midpoint` centres a diverging map colour scale on that value;
+# `map_log_scale: true` colours the map by the logarithm of the value (skewed indicators).
 start_period: 2015
 
 datasets:
@@ -9,6 +12,15 @@ datasets:
     label: GDP per inhabitant
     unit: PPS (EU27 from 2020) per inhabitant
     valid_range: [1000, 200000]
+    dashboard: false
+
+  - id: gdp_pps_pct_eu27
+    code: nama_10r_2gdp
+    key: A.PPS_HAB_EU27_2020.
+    label: GDP per inhabitant, EU27 = 100
+    unit: PPS per inhabitant, % of the EU27 average
+    valid_range: [10, 400]
+    map_midpoint: 100
 
   - id: population
     code: demo_r_d2jan
@@ -16,6 +28,15 @@ datasets:
     label: Population on 1 January
     unit: Persons
     valid_range: [1000, 500000000]
+    dashboard: false
+
+  - id: population_density
+    code: demo_r_d3dens
+    key: A.PER_KM2.
+    label: Population density
+    unit: Persons per km²
+    valid_range: [1, 15000]
+    map_log_scale: true
 
   - id: unemployment_rate
     code: lfst_r_lfu3rt
